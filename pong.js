@@ -1,10 +1,13 @@
+// Canvas and context
 const canvas = document.getElementById("pong");
 const ctx = canvas.getContext("2d");
 
+// Paddle dimensions and speed
 const paddleWidth = 10;
 const paddleHeight = 100;
 const paddleSpeed = 5;
 
+// Player and computer paddle objects
 const player = {
   x: 10,
   y: canvas.height / 2 - paddleHeight / 2,
@@ -21,6 +24,7 @@ const computer = {
   dy: 0,
 };
 
+// Ball object
 const ball = {
   x: canvas.width / 2,
   y: canvas.height / 2,
@@ -29,11 +33,13 @@ const ball = {
   dy: 2,
 };
 
+// Draw paddle
 function drawPaddle(x, y, width, height, color) {
   ctx.fillStyle = color;
   ctx.fillRect(x, y, width, height);
 }
 
+// Draw ball
 function drawBall(x, y, radius, color) {
   ctx.fillStyle = color;
   ctx.beginPath();
@@ -42,6 +48,7 @@ function drawBall(x, y, radius, color) {
   ctx.fill();
 }
 
+// Computer AI
 function computerAI() {
   if (ball.y < computer.y + computer.height / 2) {
     computer.dy = -paddleSpeed;
@@ -52,7 +59,9 @@ function computerAI() {
   }
 }
 
+// Update game state
 function update() {
+  // Update paddle positions
   player.y += player.dy;
   computer.y += computer.dy;
 
@@ -98,26 +107,33 @@ function update() {
   }
 }
 
+// Draw game objects
 function draw() {
+  // Clear canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // Draw paddles and ball
   drawPaddle(player.x, player.y, player.width, player.height, "white");
   drawPaddle(computer.x, computer.y, computer.width, computer.height, "white");
   drawBall(ball.x, ball.y, ball.radius, "white");
 }
 
+// Main game loop
 function gameLoop() {
+  if (!gameStarted) return;
+  
   if (isPlayerVsComputer) {
     computerAI();
   }
+  
   update();
   draw();
+  
   requestAnimationFrame(gameLoop);
 }
 
+// Initialize game based on user's choice
 let gameStarted = false;
-
-// Initialize the game based on the user's choice
 const startMenu = document.getElementById("start-menu");
 const playerVsComputerBtn = document.getElementById("player-vs-computer");
 const playerVsPlayerBtn = document.getElementById("player-vs-player");
@@ -139,20 +155,7 @@ playerVsPlayerBtn.addEventListener("click", () => {
   gameLoop();
 });
 
-// Game loop
-function gameLoop() {
-  if (!gameStarted) return;
-  
-  if (isPlayerVsComputer) {
-    computerAI();
-  }
-  
-  update();
-  draw();
-  
-  requestAnimationFrame(gameLoop);
-}
-
+// Keyboard event listeners
 document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowUp") {
     computer.dy = -paddleSpeed;
@@ -176,5 +179,7 @@ document.addEventListener("keyup", (e) => {
     player.dy = 0;
   }
 });
+
+
 
 
