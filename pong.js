@@ -42,6 +42,16 @@ function drawBall(x, y, radius, color) {
   ctx.fill();
 }
 
+function computerAI() {
+  if (ball.y < computer.y + computer.height / 2) {
+    computer.dy = -paddleSpeed;
+  } else if (ball.y > computer.y + computer.height / 2) {
+    computer.dy = paddleSpeed;
+  } else {
+    computer.dy = 0;
+  }
+}
+
 function update() {
   player.y += player.dy;
   computer.y += computer.dy;
@@ -97,12 +107,40 @@ function draw() {
 }
 
 function gameLoop() {
+  if (isPlayerVsComputer) {
+    computerAI();
+  }
   update();
   draw();
   requestAnimationFrame(gameLoop);
 }
 
 gameLoop();
+
+const startMenu = document.getElementById("start-menu");
+const playerVsComputerBtn = document.getElementById("player-vs-computer");
+const playerVsPlayerBtn = document.getElementById("player-vs-player");
+let isPlayerVsComputer = true;
+
+playerVsComputerBtn.addEventListener("click", () => {
+  isPlayerVsComputer = true;
+  startMenu.style.display = "none";
+  canvas.style.display = "block";
+  canvas.focus();
+  gameLoop();
+});
+
+playerVsPlayerBtn.addEventListener("click", () => {
+  isPlayerVsComputer = false;
+  startMenu.style.display = "none";
+  canvas.style.display = "block";
+  canvas.focus();
+  gameLoop();
+});
+
+// Run the game loop only when the canvas is in focus
+canvas.addEventListener("focus", gameLoop);
+
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowUp") {

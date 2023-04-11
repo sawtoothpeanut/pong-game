@@ -6,14 +6,31 @@
   <title>Pong Game</title>
   <style>
     canvas {
-      display: block;
+      display: none;
       margin: auto;
       background-color: black;
       border: 1px solid white;
     }
+    #start-menu {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+  <div id="start-menu">
+    <button id="player-vs-computer">Player vs Computer</button>
+    <button id="player-vs-player">Player vs Player</button>
+  </div>
   <canvas id="pong" width="800" height="400"></canvas>
   <script src="pong.js"></script>
 </body>
