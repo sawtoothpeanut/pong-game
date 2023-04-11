@@ -115,8 +115,9 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
+let gameStarted = false;
 
+// Initialize the game based on the user's choice
 const startMenu = document.getElementById("start-menu");
 const playerVsComputerBtn = document.getElementById("player-vs-computer");
 const playerVsPlayerBtn = document.getElementById("player-vs-player");
@@ -126,7 +127,7 @@ playerVsComputerBtn.addEventListener("click", () => {
   isPlayerVsComputer = true;
   startMenu.style.display = "none";
   canvas.style.display = "block";
-  canvas.focus();
+  gameStarted = true;
   gameLoop();
 });
 
@@ -134,13 +135,23 @@ playerVsPlayerBtn.addEventListener("click", () => {
   isPlayerVsComputer = false;
   startMenu.style.display = "none";
   canvas.style.display = "block";
-  canvas.focus();
+  gameStarted = true;
   gameLoop();
 });
 
-// Run the game loop only when the canvas is in focus
-canvas.addEventListener("focus", gameLoop);
-
+// Game loop
+function gameLoop() {
+  if (!gameStarted) return;
+  
+  if (isPlayerVsComputer) {
+    computerAI();
+  }
+  
+  update();
+  draw();
+  
+  requestAnimationFrame(gameLoop);
+}
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowUp") {
