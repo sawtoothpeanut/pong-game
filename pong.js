@@ -118,42 +118,61 @@ function draw() {
   drawBall(ball.x, ball.y, ball.radius, "white");
 }
 
+// Draw menu
+function drawMenu() {
+  ctx.fillStyle = "white";
+  ctx.font = "24px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("Pong Game", canvas.width / 2, 100);
+
+  ctx.font = "18px Arial";
+  ctx.fillText("Player vs Computer", canvas.width / 2, 200);
+  ctx.fillText("Player vs Player", canvas.width / 2, 240);
+}
+
 // Main game loop
 function gameLoop() {
-  if (!gameStarted) return;
+  if (!gameStarted) {
+    drawMenu();
+  } else {
+    if (isPlayerVsComputer) {
+      computerAI();
+    }
   
-  if (isPlayerVsComputer) {
-    computerAI();
+    update();
+    draw();
   }
-  
-  update();
-  draw();
   
   requestAnimationFrame(gameLoop);
 }
 
+// Start the game loop when the window has finished loading
+window.onload = () => {
+  gameLoop();
+};
+
+// Handle canvas click event
+canvas.addEventListener("click", (e) => {
+  if (gameStarted) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  if (x > canvas.width / 2 - 100 && x < canvas.width / 2 + 100) {
+    if (y > 180 && y < 220) {
+      isPlayerVsComputer = true;
+      gameStarted = true;
+    } else if (y > 220 && y < 260) {
+      isPlayerVsComputer = false;
+      gameStarted = true;
+    }
+  }
+});
+
 // Initialize game based on user's choice
 let gameStarted = false;
-const startMenu = document.getElementById("start-menu");
-const playerVsComputerBtn = document.getElementById("player-vs-computer");
-const playerVsPlayerBtn = document.getElementById("player-vs-player");
 let isPlayerVsComputer = true;
-
-playerVsComputerBtn.addEventListener("click", () => {
-  isPlayerVsComputer = true;
-  startMenu.style.display = "none";
-  canvas.style.display = "block";
-  gameStarted = true;
-  gameLoop();
-});
-
-playerVsPlayerBtn.addEventListener("click", () => {
-  isPlayerVsComputer = false;
-  startMenu.style.display = "none";
-  canvas.style.display = "block";
-  gameStarted = true;
-  gameLoop();
-});
 
 // Keyboard event listeners
 document.addEventListener("keydown", (e) => {
