@@ -7,6 +7,18 @@ const paddleWidth = 10;
 const paddleHeight = 100;
 const paddleSpeed = 5;
 
+// Initialize scores and winning score
+let playerScore = 0;
+let computerScore = 0;
+const winningScore = 3;
+
+// Initialize showWinner variable
+let showWinner = false;
+
+// Initialize game based on user's choice
+let gameStarted = false;
+let isPlayerVsComputer = true;
+
 // Player and computer paddle objects
 const player = {
   x: 10,
@@ -99,12 +111,57 @@ function update() {
     ball.dx *= -1;
   }
 
-  // Ball out of bounds - reset
+  // Ball out of bounds - update scores and reset
   if (ball.x + ball.radius < 0 || ball.x - ball.radius > canvas.width) {
-    ball.x = canvas.width / 2;
-    ball.y = canvas.height / 2;
-    ball.dx *= -1;
+    if (ball.x + ball.radius < 0) {
+      computerScore++;
+    } else {
+      playerScore++;
+    }
+
+    // Check if a player has won
+    if (playerScore === winningScore || computerScore === winningScore) {
+      showWinner = true;
+      setTimeout(() => {
+        gameStarted = false;
+        playerScore = 0;
+        computerScore = 0;
+        showWinner = false;
+
+        // Reset player and computer paddle positions
+        player.y = canvas.height / 2 - paddleHeight / 2;
+        computer.y = canvas.height / 2 - paddleHeight / 2;
+
+        // Reset ball position
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        ball.dx *= -1;
+      }, 5000); // Delay of 5 seconds before resetting the game
+    } else {
+      // Reset ball position only if no player has won
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+      ball.dx *= -1;
+    }
   }
+}
+
+
+// Draw scores
+function drawScores() {
+  ctx.fillStyle = "white";
+  ctx.font = "24px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(playerScore, canvas.width / 4, 50);
+  ctx.fillText(computerScore, (3 * canvas.width) / 4, 50);
+}
+
+// Draw "Player X Wins!" message
+function drawWinner(winner) {
+  ctx.fillStyle = "white";
+  ctx.font = "48px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(`Player ${winner} Wins!`, canvas.width / 2, canvas.height / 2);
 }
 
 // Draw game objects
@@ -112,10 +169,22 @@ function draw() {
   // Clear canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+   // Draw scores
+   drawScores();
+
   // Draw paddles and ball
   drawPaddle(player.x, player.y, player.width, player.height, "white");
   drawPaddle(computer.x, computer.y, computer.width, computer.height, "white");
-  drawBall(ball.x, ball.y, ball.radius, "white");
+  if (!showWinner) {
+    drawBall(ball.x, ball.y, ball.radius, "white");
+  }
+
+  // Draw winner
+  if (playerScore === winningScore) {
+    drawWinner(1);
+  } else if (computerScore === winningScore) {
+    drawWinner(2);
+  }
 }
 
 // Draw menu
@@ -138,11 +207,13 @@ function gameLoop() {
     if (isPlayerVsComputer) {
       computerAI();
     }
-  
-    update();
+
+    if (!showWinner) {
+      update();
+    }
     draw();
   }
-  
+
   requestAnimationFrame(gameLoop);
 }
 
@@ -159,20 +230,14 @@ canvas.addEventListener("click", (e) => {
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
-  if (x > canvas.width / 2 - 100 && x < canvas.width / 2 + 100) {
-    if (y > 180 && y < 220) {
-      isPlayerVsComputer = true;
-      gameStarted = true;
-    } else if (y > 220 && y < 260) {
-      isPlayerVsComputer = false;
-      gameStarted = true;
-    }
+  if (y > 180 && y < 220) {
+    isPlayerVsComputer = true;
+    gameStarted = true;
+  } else if (y > 220 && y < 260) {
+    isPlayerVsComputer = false;
+    gameStarted = true;
   }
-});
-
-// Initialize game based on user's choice
-let gameStarted = false;
-let isPlayerVsComputer = true;
+})
 
 // Keyboard event listeners
 document.addEventListener("keydown", (e) => {
